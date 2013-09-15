@@ -1,0 +1,8 @@
+#--------------------------------------
+# cs354 - mapfile used for loader lab
+# All programs loaded by our loader have to start at this address.
+#--------------------------------------
+
+text    = LOAD ?RX V0x40000000;
+text    : $PROGBITS ?A!W;
+
