@@ -1,10 +1,10 @@
-
 #include <elf.h>
 #include <stdio.h>
 #include <sys/mman.h>
 #include <string.h>
-
 #include <stdlib.h>
+#include <assert.h>
+
 typedef void (*FUNCPTR)();
 
 // Table with the functions that the executables will need.
@@ -48,47 +48,40 @@ int load_and_run(char * progname, int argc, char ** argv )
 		exit(1);
 	}
 	
-  	// Get entry point address from ehdr.e_entry and store it in a
-  	// function pointer "mystart".
+  // Get entry point address from ehdr.e_entry and store it in a
+  // function pointer "mystart".
 	mystart = (void*)ehdr.e_entry;
 	
-  	// Iterate over all phdrs
-  	// Program headers. Load program
-  	for ( i = 0; i < ehdr.e_phnum; i++ ) {
-		// read phdr
-		fseek( fp, ehdr.e_phoff + i * ehdr.e_phentsize, SEEK_SET );
-		if ( fread( &phdr, sizeof(phdr), 1, fp ) != 1 ) {
-			fprintf(stderr, "%s: couldn't read %s\n", argv[0], argv[1]);
-			exit(1);
-		}
+ // Iterate over all phdrs
+ // Program headers. Load program
+ for ( i = 0; i < ehdr.e_phnum; i++ ) {
+   // read phdr
+	 fseek( fp, ehdr.e_phoff + i * ehdr.e_phentsize, SEEK_SET );
+	 if ( fread( &phdr, sizeof(phdr), 1, fp ) != 1 ) {
+		 fprintf(stderr, "%s: couldn't read %s\n", argv[0], argv[1]);
+		 exit(1);
+	 }
 		
-		// allocate memory mapping at phdr.p_vaddr of size phdr.p_memsz using
-    	addr = mmap((void*) phdr.p_vaddr, phdr.p_memsz, PROT_READ|PROT_WRITE| PROT_EXEC,MAP_PRIVATE|MAP_FIXED|MAP_ANON, -1, 0);
+   // allocate memory mapping at phdr.p_vaddr of size phdr.p_memsz using
+   addr = mmap((void*) phdr.p_vaddr, phdr.p_memsz, PROT_READ|PROT_WRITE| PROT_EXEC,MAP_PRIVATE|MAP_FIXED|MAP_ANON, -1, 0);
     	
-    	// Make sure addr returned is the one requested 
-    	
-    	/*if(addr!=&phdr.p_vaddr){
-    		printf("Something  bad  happened\n");
-    		continue;
-    	}*/
-    	
+   // Make sure addr returned is the one requested 
+   assert(addr==phdr.p_vaddr);  	
 		
-	    // Read the program from phdr.p_offset, phdr.p_filesz bytes and store it
-	    // into phdr.p_vaddr. Do this only if phdr.p_filesz>0.
-	    if(phdr.p_filesz>0){
-	    	
-	    	fseek(fp,phdr.p_offset,SEEK_SET);
-	    	if ( fread( (void *)phdr.p_vaddr, phdr.p_filesz, 1, fp ) != 1 ) {
-				fprintf(stderr, "%s: couldn't read %s\n", argv[0], argv[1]);
-				exit(1);
-			}
-	    }
-	}
-  	
+	 // Read the program from phdr.p_offset, phdr.p_filesz bytes and store it
+	 // into phdr.p_vaddr. Do this only if phdr.p_filesz>0.
+	 if(phdr.p_filesz>0){
+	   fseek(fp,phdr.p_offset,SEEK_SET);
+	   if ( fread( (void *)phdr.p_vaddr, phdr.p_filesz, 1, fp ) != 1 ) {
+			 fprintf(stderr, "%s: couldn't read %s\n", argv[0], argv[1]);
+			 exit(1);
+		 }
+	 }
+ }
 
-  	// Call the "mystart" function using the pointer obtained above.
-  	// Pass as arguments FUNC_TABLE, argc, argv
-  	mystart(FUNC_TABLE, argc, argv);
+ // Call the "mystart" function using the pointer obtained above.
+ // Pass as arguments FUNC_TABLE, argc, argv
+ mystart(FUNC_TABLE, argc, argv);
 }
 
 main(argc, argv)
