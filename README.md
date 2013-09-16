@@ -1,6 +1,6 @@
 ELF Reader and Loader
 =====================
-Project link: http://www.cs.purdue.edu/homes/grr/cs354/
+Project link: http://www.cs.purdue.edu/homes/grr/cs354/lab1-elfinfo/
 
 * elfinfo.c: an ELF executable file reader.
 * loader.c: a simple loader to load the program in memory and run it.
