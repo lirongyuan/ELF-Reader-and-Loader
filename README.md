@@ -1,26 +1,48 @@
 ELF Reader and Loader
 =====================
-Project link: http://www.cs.purdue.edu/homes/grr/cs354/lab1-elfinfo/
 
-* elfinfo.c: an ELF executable file reader.
-* loader.c: a simple loader to load the program in memory and run it.
-* compare.sh: compare the output of the file reader elfinfo with elfdump.
-* runprog.sh: load programs with loader.
+There are several formats of executable files. The most common ones are a.out and elf. a.out is the oldest one and it is used mainly in BSD Unix.
+``elfinfo`` is an ELF executable file reader that displays the header information and the symbol table contained in an elf file.
 
+``loader`` is a loader to load an ELF executable file in memory and run it.
 
-Setup:
-------
-Add the path to the gcc version 3 compiler and make files:
+http://www.cs.purdue.edu/homes/grr/cs354/lab1-elfinfo/
+
+Download
+--------
 ```
-export PATH=/opt/csw/gcc3/bin:$PATH
-make
+$ git clone https://github.com/lirongyuan/ELF-Reader-and-Loader.git
 ```
 
+Setup
+-----
+```
+$ export PATH=/opt/csw/gcc3/bin:$PATH
+$ make
+```
 
-Run the programs:
------------------
+Usage
+-----
 ```
-compare.sh
-runprog.sh
+$ ./elfinfo prog-name
 ```
+
+```
+$ ./loader prog-name
+```
+
+
+Tests
+-----
+Compare the output of the file reader elfinfo with elfdump.
+```
+$ compare.sh
+```
+
+Load programs with loader.
+```
+$ runprog.sh
+```
+
+
 
